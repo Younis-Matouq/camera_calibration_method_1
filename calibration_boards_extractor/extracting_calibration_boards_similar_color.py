@@ -1,10 +1,13 @@
+import sys
 import argparse
 import glob
 import os
 import numpy as np
 import cv2
 from pathlib import Path
-from ..src.utiles import *
+from tqdm import tqdm 
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'src')))
+from utiles import * 
 
 def extracting_calibration_boards_similar_color(imgs_directory_path,save_path):
     '''
@@ -15,12 +18,15 @@ def extracting_calibration_boards_similar_color(imgs_directory_path,save_path):
     out regions below a certain size threshold, and finds contours within these regions. Finally, it generates filled polygon
     masks for these contours and saves these masks as separate files.        
     '''
+    print('Starting Process.....')
     #initiat color ranges
     colors= color_range_initiator()
     #get images paths
     all_imgs_path=glob.glob(os.path.join(imgs_directory_path,'*.png'))
 
-    for img_path in all_imgs_path:
+
+    # Wrap the main loop with tqdm for the progress bar
+    for img_path in tqdm(all_imgs_path, desc='Processing Images'):
 
         # Load your image (replace 'your_image.jpg' with your image file)
         image = cv2.imread(img_path)
@@ -44,9 +50,10 @@ def extracting_calibration_boards_similar_color(imgs_directory_path,save_path):
                 continue
             else:
                 save_filled_mask(poly, file_path= os.path.join(save_path,Path(img_path).stem+f'_mask_{i}'+Path(img_path).suffix))
-
+    print('End of Process!')
+    
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Process images to extract calibration boards that has different colors.")
+    parser = argparse.ArgumentParser(description="Process images to extract calibration boards that has similar colors.")
     parser.add_argument("imgs_directory_path", help="Path to the directory containing images.")
     parser.add_argument("save_path", help="Path where the output masks will be saved.")
 
