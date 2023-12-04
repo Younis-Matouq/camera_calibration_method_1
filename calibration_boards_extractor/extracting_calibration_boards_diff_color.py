@@ -4,7 +4,7 @@ import os
 import numpy as np
 import cv2
 from pathlib import Path
-from src.utiles import *
+from ..src.utiles import *
 
 def extracting_calibration_boards_diff_color(imgs_directory_path,save_path):
     '''
@@ -32,7 +32,7 @@ def extracting_calibration_boards_diff_color(imgs_directory_path,save_path):
             color_range_img = cv2.inRange(hsv_image,*color_range)
             #find coords of color:
             color_range_pix_coord=np.argwhere(color_range_img == 255)
-            poly_area= mask_area(color_range_pix_coord)[0]
+            poly_area= mask_area(color_range_pix_coord,img_width=color_range_img.shape[0],img_height=color_range_img.shape[1])[0]
             #filter out empty images:
             if poly_area < 200:
                 continue
@@ -41,7 +41,7 @@ def extracting_calibration_boards_diff_color(imgs_directory_path,save_path):
             contours, _ = cv2.findContours(color_range_img, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
             approx_contours = [cv2.approxPolyDP(cnt, 0.01 * cv2.arcLength(cnt, True), True) for cnt in contours]
             # Find the filled polygon using the fill_polygon function
-            filled_polygon_mask = fill_polygon(approx_contours)
+            filled_polygon_mask = fill_polygon(approx_contours,img_width=color_range_img.shape[0],img_height=color_range_img.shape[1])
 
             
             save_filled_mask(filled_polygon_mask, file_path= os.path.join(save_path,Path(img_path).stem+f'_mask_{i}'+Path(img_path).suffix))

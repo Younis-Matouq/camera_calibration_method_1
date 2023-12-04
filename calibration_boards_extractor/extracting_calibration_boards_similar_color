@@ -4,7 +4,7 @@ import os
 import numpy as np
 import cv2
 from pathlib import Path
-from src.utiles import *
+from ..src.utiles import *
 
 def extracting_calibration_boards_similar_color(imgs_directory_path,save_path):
     '''
@@ -34,11 +34,11 @@ def extracting_calibration_boards_similar_color(imgs_directory_path,save_path):
         approx_contours = [cv2.approxPolyDP(cnt, 0.01 * cv2.arcLength(cnt, True), True) for cnt in contours]
 
         # Find the polygons corresponding to the highest two areas using the fill_two_polygons function
-        largest_two_polygons = fill_two_polygons(approx_contours)
+        largest_two_polygons = fill_two_polygons(approx_contours,img_width=color_range_img.shape[0],img_height=color_range_img.shape[1])
 
         for i, poly in enumerate(largest_two_polygons):
             color_range_pix_coord=np.argwhere(poly == 1)
-            poly_area= mask_area(color_range_pix_coord)[0]
+            poly_area= mask_area(color_range_pix_coord,img_width=color_range_img.shape[0],img_height=color_range_img.shape[1])[0]
 
             if poly_area < 200:
                 continue
