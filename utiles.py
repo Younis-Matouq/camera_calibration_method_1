@@ -165,14 +165,18 @@ def save_filled_mask(mask, file_path):
     mask_to_save = (mask * 255).astype(np.uint8)
     # Save the mask image
     cv2.imwrite(file_path, mask_to_save)
+    
+def color_range_initiator():
+    '''This function initiates a dict with the upper and lower bounds of the HSV color range for both green and red.'''
+    #range for green
+    lower_green = np.array([50, 40, 100])
+    upper_green = np.array([80, 255, 255])
+    # range for red
+    lower_red = np.array([160, 80, 100])
+    upper_red = np.array([179, 255, 255])
 
-lower_green = np.array([50, 40, 100])
-upper_green = np.array([80, 255, 255])
-# range for red
-lower_red = np.array([160, 80, 100])
-upper_red = np.array([179, 255, 255])
-
-colors={
-        'green': [lower_green,upper_green],
-        'red': [lower_red,upper_red]
-        }
+    colors={
+            'green': [lower_green,upper_green],
+            'red': [lower_red,upper_red]
+            }
+    return colors
