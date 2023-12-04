@@ -73,7 +73,7 @@ python calibration_boards_extractor/main_map_constructor.py <imgs_directory_path
 The expected output of using the calibration boards extractor scripts is a binary image containing the mask of the board. The following image illustrates an example of the output:
 
 <p float="left" align="center">
-  <img src="./script_output_example/A4_3654.JPG" width="600" height="250">
+  <img src="./script_output_example/binary_image_mask.png" width="600" height="250">
 </p>
 
 <!-- ![Example Output of Calibration Boards Extractor](./script_output_example/A4_3654.JPG) -->
