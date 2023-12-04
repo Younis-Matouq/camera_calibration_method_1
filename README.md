@@ -1,77 +1,99 @@
-# Unsupervised Lane Marking Annotator
+# Camera Calibration Method 1
 
-This project provides a script to unsupervisedly annotate pavement lanemarking in RGB images. It uses the raw image and generates corresponding segmentation masks. The output of the script will be JSON files containing annotations and they will be saved at the specified path.
+## Overview
+This project provides scripts to aid in the process of calibrating a camera using calibration boards. It primarily focuses on two tasks: 
+1. Extracting calibration boards from raw images.
+2. Constructing an area map that reflects the area in square inches represented by each pixel.
 
-<p float="left" align="center">
-  <img src="./script_output_example/algo_flowchart.png" width="550" /> 
-</p>
 
 ## Installation
 
-Follow these steps to install and run the script:
+Follow these steps to clone the repo and install the requirements:
 
 1. **Clone the Repository Locally**: Use the following command to clone the repo:
    ```shell
-    git clone --recursive https://github.com/Younis-Matouq/Lane_Marking_Annotator.git
+    git clone https://github.com/Younis-Matouq/camera_calibration_method_1.git
     ```
 
 2. **Navigate to the Project Directory**: Install the required Python packages using `pip`:
 
     ```shell
-    cd Lane_Marking_Annotator
+    cd camera_calibration_method_1
     ```
 
    ```shell
     pip install -r requirements.txt
     ```
-3. **Navigate to Segment Anything Directory**: Use the `cd` command to navigate into the `segment-anything` directory:
 
-    ```shell
-    cd segment-anything
+## Scripts
+
+### calibration_boards_extractor
+This directory contains two scripts:
+
+1. **extracting_calibration_boards_diff_color.py**
+   - Purpose: Extracts calibration boards when they have different colors.
+   - ![Input and Output of extracting_calibration_boards_diff_color.py](./script_output_example/different_color_boards.png)
+     
+
+2. **extracting_calibration_boards_similar_color.py**
+   - Purpose: Extracts calibration boards when they have the same color.
+   - ![Input and Output of extracting_calibration_boards_similar_color.py](./script_output_example/same_color_boards.png)
+     
+
+### Usage
+To use these scripts, run the following commands with the specified arguments:
+
+- For different colored boards:
+    ```python
+    python calibration_boards_extractor/main_map_constructor.py <imgs_directory_path> <save_path> <num_neighbors> <board_area_inches>
+    ```
+- For similarly colored boards:
+    ```python
+    python calibration_boards_extractor/extracting_calibration_boards_similar_color.py <imgs_directory_path> <save_path>
     ```
 
-4. **Install the Requirements**: Install the required Python packages using `pip`:
 
-    ```shell
-    pip install -e .
-    ```
+### area_map_constructor
+This directory contains the script for generating area maps:
 
-## Configuration
+- **main_map_constructor.py**
+- Purpose: Generates two area maps - the original and a processed one.
+- ![Process and Output of main_map_constructor.py](./script_output_example/area_map_process_output.png)
+  
 
-The script uses a `config.yaml` file to pass arguments to the main script. To run the script properly, you must update this file with your specific settings. Here's a description of what each setting does:
-
-- `source_directory_path`: A path to the source directory containing images, str.
-- `save_path`: The directory where the script will save the output JSON files.
-- `sam_checkpoint`: The path to the SAM model checkpoint file. The checkpoint is available at https://github.com/facebookresearch/segment-anything
-
-Below is an example of how your `config.yaml` file might look:
-
-```yaml
-source_directory_path: img_directory\imgs
-save_path: saving_path\results
-sam_checkpoint: sam_checkpoint_path\sam_vit_h_4b8939.pth
-```
-
-## Usage 
-**To run the script navegate to the Lane_Marking_Annotator directory then use the following command.**
-
+#### Usage:
+To use the `main_map_constructor` script, execute the following command with the necessary arguments:
 ```python
-python main_lane_marking_annotator.py --config config.yaml
+python calibration_boards_extractor/main_map_constructor.py <imgs_directory_path> <save_path> <num_neighbors> <board_area_inches>
 ```
-    
 
 ## Output
 
-Once you run the script, it will process the images in the specified directories,and will generate the segmentation annotations. 
+### Calibration Boards Extractor Scripts
+The expected output of using the calibration boards extractor scripts is a binary image containing the mask of the board. The following image illustrates an example of the output:
 
-The output will be a set of JSON files containing the segmentation annotations. These files will be in a format compatible with labelme.
+<p float="left" align="center">
+  <img src="./script_output_example/A4_3654.JPG" width="600" height="250">
+</p>
 
-The JSON files will be saved in the directory specified by the `save_path` parameter in the `config.yaml` file.
+<!-- ![Example Output of Calibration Boards Extractor](./script_output_example/A4_3654.JPG) -->
 
-> :information_source: **Note:** The purpose of this algorithm is to facilitate the annotation process. It is important to note that the annotations produced by this algorithm require further evaluation for accuracy. While the algorithm may not annotate all objects, it serves as an effective starting point for creating a dataset. This dataset can then be used to train an instance segmentation model specifically for segmenting lane line markings.
+
+### Area Constructor Script
+The output of running the area constructor script includes two area maps:
+1. The original map without any processing.
+2. The processed area map using KNN-Regressor to fill gaps within the area map, if presented.
+
+The following image shows the expected output:
+
+![Example Output of Area Constructor Script](./script_output_example/processed_raw_area_map.png)
+
+
+
+## Note
+> :information_source:
+The scripts currently account for green and red color boards. If other colors are used, modify the `color_range_initiator` function in the `utiles` module to include the upper and lower HSV colors of the used boards.
 
 ## License
 
 This project is licensed under the terms of the MIT License.
-
-
